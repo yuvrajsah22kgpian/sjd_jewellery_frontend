@@ -1,130 +1,5 @@
-// "use client";
-
-// import { useState } from "react";
-// import { ChevronDown, ChevronUp } from "lucide-react";
-
-// type FilterOption = {
-//   label: string;
-//   value: string;
-// };
-
-// type FilterSectionProps = {
-//   title: string;
-//   options: FilterOption[];
-// };
-
-// function FilterSection({ title, options }: FilterSectionProps) {
-//   const [open, setOpen] = useState(true);
-
-//   return (
-//     <div className="border-b pb-4 mb-4">
-//       {/* Header */}
-//       <div
-//         className="flex justify-between items-center cursor-pointer mb-2"
-//         onClick={() => setOpen(!open)}
-//       >
-//         <h3 className="font-semibold text-gray-800">{title}</h3>
-//         {open ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-//       </div>
-
-//       {/* Options */}
-//       {open && (
-//         <div className="space-y-2 pl-2">
-//           {options.map((opt) => (
-//             <label
-//               key={opt.value}
-//               className="flex items-center gap-2 text-sm text-gray-700"
-//             >
-//               <input
-//                 type="checkbox"
-//                 value={opt.value}
-//                 className="accent-black"
-//               />
-//               {opt.label}
-//             </label>
-//           ))}
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-// export default function FilterPanel() {
-//   return (
-//     <aside className="w-72 bg-white border-r px-4 py-6 overflow-y-auto">
-//       <h2 className="text-lg font-bold mb-6">Filters</h2>
-
-//       <FilterSection
-//         title="Material"
-//         options={[
-//           { label: "Gold", value: "gold" },
-//           { label: "Silver", value: "silver" },
-//           { label: "Diamond", value: "diamond" },
-//         ]}
-//       />
-
-//       <FilterSection
-//         title="Category"
-//         options={[
-//           { label: "Rings", value: "rings" },
-//           { label: "Bands", value: "bands" },
-//           { label: "Earrings", value: "earrings" },
-//           { label: "Necklaces", value: "necklaces" },
-//           { label: "Pendants", value: "pendants" },
-//           { label: "Bangles", value: "bangles" },
-//           { label: "Bracelets", value: "bracelets" },
-//         ]}
-//       />
-
-//       <FilterSection
-//         title="Metal Type"
-//         options={[
-//           { label: "10k", value: "10k" },
-//           { label: "14k", value: "14k" },
-//           { label: "Silver", value: "silver" },
-//         ]}
-//       />
-
-//       <FilterSection
-//         title="Metal Tones"
-//         options={[
-//           { label: "Yellow Gold", value: "yellow-gold" },
-//           { label: "Two Tone", value: "two-tone" },
-//           { label: "Rose Gold", value: "rose-gold" },
-//           { label: "White Gold", value: "white-gold" },
-//           { label: "Pink Two Tone", value: "pink-two-tone" },
-//           { label: "Dark Polish", value: "dark-polish" },
-//         ]}
-//       />
-
-//       <FilterSection
-//         title="Diamond Weight (CT)"
-//         options={[
-//           { label: "<0.25", value: "lt-0.25" },
-//           { label: "0.25", value: "0.25" },
-//           { label: "0.50", value: "0.50" },
-//           { label: "0.75", value: "0.75" },
-//           { label: "1.00", value: "1.00" },
-//           { label: "1.50", value: "1.50" },
-//           { label: "2.00", value: "2.00" },
-//           { label: ">2.00", value: "gt-2.00" },
-//         ]}
-//       />
-
-//       <FilterSection
-//         title="Price Range"
-//         options={[
-//           { label: "Under $100", value: "under-100" },
-//           { label: "$100 - $500", value: "100-500" },
-//           { label: "$500 - $1000", value: "500-1000" },
-//           { label: "Over $1000", value: "over-1000" },
-//         ]}
-//       />
-//     </aside>
-//   );
-// }
-
-import React, { useState } from 'react';
+"use client";
+import React, { useState, useEffect } from 'react';
 import { 
   ChevronDownIcon, 
   ChevronUpIcon,
@@ -133,7 +8,7 @@ import {
   Squares2X2Icon,
   BeakerIcon,
   SwatchIcon,
-  StarIcon, // Use StarIcon instead of GemIcon
+  StarIcon,
   CurrencyDollarIcon
 } from '@heroicons/react/24/outline';
 
@@ -179,6 +54,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
         type="button"
         aria-expanded={isOpen}
         aria-controls={`filter-${title.toLowerCase().replace(/\s+/g, '-')}`}
+        suppressHydrationWarning
       >
         <div className="flex items-center space-x-3">
           <Icon className="h-5 w-5 text-gray-600" />
@@ -212,6 +88,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                 checked={selectedValues.includes(option.value)}
                 onChange={(e) => onOptionChange(option.value, e.target.checked)}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                suppressHydrationWarning
               />
               <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900 transition-colors">
                 {option.label}
@@ -224,12 +101,10 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   );
 };
 
-// Main FiltersPage Component
-const FiltersPage: React.FC = () => {
-  // State for managing which sections are open/closed
+// Main FilterPanel Component
+const FilterPanel: React.FC = () => {
+  const [mounted, setMounted] = useState(false);
   const [openSections, setOpenSections] = useState<FilterState>({});
-  
-  // State for managing selected filter options
   const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>({
     material: [],
     category: [],
@@ -238,6 +113,10 @@ const FiltersPage: React.FC = () => {
     diamondWeight: [],
     priceRange: []
   });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Toggle section open/closed
   const toggleSection = (sectionKey: string): void => {
@@ -281,6 +160,7 @@ const FiltersPage: React.FC = () => {
   // Apply filters
   const applyFilters = (): void => {
     console.log('Applied Filters:', selectedFilters);
+    // Add your filter application logic here
   };
 
   // Get total count of selected filters
@@ -340,7 +220,7 @@ const FiltersPage: React.FC = () => {
     {
       key: 'diamondWeight',
       title: 'Diamond Weight (CT)',
-      icon: StarIcon, // Changed from GemIcon to StarIcon
+      icon: StarIcon,
       options: [
         { label: "<0.25", value: "lt-0.25" },
         { label: "0.25", value: "0.25" },
@@ -365,57 +245,88 @@ const FiltersPage: React.FC = () => {
     }
   ];
 
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-xl border border-gray-200">
-        <div className="px-6 py-6">
-          <div className="flex items-center justify-center space-x-3 mb-6 pb-4 border-b border-gray-200">
-            <AdjustmentsHorizontalIcon className="h-6 w-6 text-blue-600" />
-            <h2 className="text-2xl font-bold text-gray-800">Filters</h2>
-            {getTotalSelectedCount() > 0 && (
-              <span className="bg-blue-600 text-white text-sm font-medium px-3 py-1 rounded-full">
-                {getTotalSelectedCount()}
-              </span>
-            )}
-          </div>
-
-          <div className="space-y-3">
-            {filterSections.map((section) => (
-              <FilterSection
-                key={section.key}
-                title={section.title}
-                icon={section.icon}
-                options={section.options}
-                isOpen={openSections[section.key] || false}
-                onToggle={() => toggleSection(section.key)}
-                selectedValues={selectedFilters[section.key] || []}
-                onOptionChange={(value, checked) => 
-                  handleOptionChange(section.key, value, checked)
-                }
-              />
+  // SSR Loading State
+  if (!mounted) {
+    return (
+      <div className="w-full bg-white border border-gray-200 rounded-xl shadow-lg p-6">
+        <div className="flex items-center justify-center space-x-3 mb-6 pb-4 border-b border-gray-200">
+          <AdjustmentsHorizontalIcon className="h-6 w-6 text-blue-600" />
+          <h2 className="text-xl font-bold text-gray-800">Filters</h2>
+        </div>
+        <div className="space-y-3">
+          {/* Loading skeleton */}
+          <div className="animate-pulse space-y-3">
+            {[1,2,3,4,5,6].map((i) => (
+              <div key={i} className="h-12 bg-gray-200 rounded-lg"></div>
             ))}
           </div>
-
-          <div className="mt-8 pt-6 border-t border-gray-200 flex space-x-3">
-            <button 
-              onClick={applyFilters}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={getTotalSelectedCount() === 0}
-            >
-              Apply Filters {getTotalSelectedCount() > 0 && `(${getTotalSelectedCount()})`}
-            </button>
-            <button 
-              onClick={clearAllFilters}
-              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-3 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={getTotalSelectedCount() === 0}
-            >
-              Clear All
-            </button>
-          </div>
         </div>
+      </div>
+    );
+  }
+
+  // Main Component Render
+  return (
+    <div className="w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
+      <div className="px-6 py-6">
+        <div className="flex items-center justify-center space-x-3 mb-6 pb-4 border-b border-gray-200">
+          <AdjustmentsHorizontalIcon className="h-6 w-6 text-blue-600" />
+          <h2 className="text-xl font-bold text-gray-800">Filters</h2>
+          {getTotalSelectedCount() > 0 && (
+            <span className="bg-blue-600 text-white text-sm font-medium px-3 py-1 rounded-full">
+              {getTotalSelectedCount()}
+            </span>
+          )}
+        </div>
+
+        <div className="space-y-3">
+          {filterSections.map((section) => (
+            <FilterSection
+              key={section.key}
+              title={section.title}
+              icon={section.icon}
+              options={section.options}
+              isOpen={openSections[section.key] || false}
+              onToggle={() => toggleSection(section.key)}
+              selectedValues={selectedFilters[section.key] || []}
+              onOptionChange={(value, checked) => 
+                handleOptionChange(section.key, value, checked)
+              }
+            />
+          ))}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="mt-8 pt-6 border-t border-gray-200 flex space-x-3">
+          <button 
+            onClick={applyFilters}
+            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={getTotalSelectedCount() === 0}
+            suppressHydrationWarning
+          >
+            Apply Filters {getTotalSelectedCount() > 0 && `(${getTotalSelectedCount()})`}
+          </button>
+          <button 
+            onClick={clearAllFilters}
+            className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-3 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={getTotalSelectedCount() === 0}
+            suppressHydrationWarning
+          >
+            Clear All
+          </button>
+        </div>
+
+        {/* Debug info - remove in production */}
+        {process.env.NODE_ENV === 'development' && getTotalSelectedCount() > 0 && (
+          <div className="mt-4 p-3 bg-gray-100 rounded-lg">
+            <p className="text-xs font-mono text-gray-600">
+              Selected: {JSON.stringify(selectedFilters, null, 2)}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-export default FiltersPage;
+export default FilterPanel;

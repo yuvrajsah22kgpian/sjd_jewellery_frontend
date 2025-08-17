@@ -1,44 +1,101 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import dynamic from 'next/dynamic';
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import FilterPanel from "../components/FilterPanel";
 import CategoryGrid from "../components/CategoryGrid";
-import ProductBlocks from "../components/ProductBlocks";
+import { AdjustmentsHorizontalIcon, XMarkIcon } from "@heroicons/react/24/outline";
+
+// Dynamically import FilterPanel to avoid SSR issues
+const FilterPanel = dynamic(() => import('../components/FilterPanel'), {
+  ssr: false,
+  loading: () => (
+    <div className="animate-pulse space-y-3 p-6">
+      {[1,2,3,4,5,6].map((i) => (
+        <div key={i} className="h-12 bg-gray-200 rounded-lg"></div>
+      ))}
+    </div>
+  )
+});
 
 export default function LandingPage() {
+  const [showFilters, setShowFilters] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
       <Header />
 
+      {/* Mobile Filter Toggle Button */}
+      <div className="md:hidden bg-white border-b border-gray-200 px-4 py-3">
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors"
+          suppressHydrationWarning
+        >
+          <AdjustmentsHorizontalIcon className="h-5 w-5" />
+          <span className="font-medium">Filters</span>
+        </button>
+      </div>
+
+      {/* Mobile Filter Overlay */}
+      {mounted && showFilters && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowFilters(false)} />
+          <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-white shadow-xl">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold">Filters</h3>
+              <button
+                onClick={() => setShowFilters(false)}
+                className="p-1 hover:bg-gray-100 rounded-full"
+                suppressHydrationWarning
+              >
+                <XMarkIcon className="h-6 w-6" />
+              </button>
+            </div>
+            <div className="p-4 overflow-y-auto h-full">
+              <FilterPanel />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
-      <main className="flex flex-1 bg-gray-50">
-        {/* Left - Filters */}
-        <div className="hidden md:block">
-          <FilterPanel />
+      <main className="flex flex-col md:flex-row flex-1 bg-[#92bce03b]">
+        
+        {/* Desktop Filters */}
+        <div className="flex items-center justify-center min-h-full p-2 sm:p-4 md:p-6">
+          <div className="w-full max-w-sm sm:max-w-md bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
+            <FilterPanel />
+          </div>
         </div>
 
-        {/* Right - Categories + Products */}
-        <div className="flex-1">
-        <section className="text-center px-6 py-12">
-          {/* Title */}
-          <h1 className="text-3xl md:text-4xl font-bold tracking-wide text-gray-900">
-            SJD JEWELRY WHOLESALE
-          </h1>
 
-          {/* Description */}
-          <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
-            Discover our exquisite collection of fine jewelry. Choose your preferred way 
-            to explore our premium selection.
-          </p>
-        </section>
-          <CategoryGrid />
-          {/* <ProductBlocks /> */}
+        {/* Main Content Area */}
+        <div className="flex-1 ">
+          <section className="text-center px-4 py-8 md:px-6 md:py-12">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-wide text-gray-900 leading-tight">
+              SJD JEWELLERY WHOLESALE
+            </h1>
+            <p className="mt-4 md:mt-6 text-sm sm:text-base md:text-lg text-gray-600 max-w-sm sm:max-w-xl md:max-w-2xl mx-auto px-2">
+              Discover our exquisite collection of fine jewelry. Choose your preferred way 
+              to explore our premium selection.
+            </p>
+          </section>
+
+          <div className="px-4 md:px-8 pb-8">
+            <CategoryGrid />
+          </div>
         </div>
+
       </main>
 
-      {/* Footer */}
       <Footer />
     </div>
   );
