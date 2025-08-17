@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import dynamic from 'next/dynamic';
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import ShopByMaterial from "../components/MaterialGrid";
+import ShopByStyle from "../components/Stylegrid";
 import CategoryGrid from "../components/CategoryGrid";
 import { AdjustmentsHorizontalIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
@@ -70,25 +72,33 @@ export default function LandingPage() {
       <main className="flex flex-col md:flex-row flex-1 bg-[#92bce03b]">
         
         {/* Desktop Filters */}
-        <div className="flex items-center justify-center min-h-full p-2 sm:p-4 md:p-6">
-          <div className="w-full max-w-sm sm:max-w-md bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
-            <FilterPanel />
-          </div>
+        
+        <div className="w-full max-w-xs mx-auto bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden mt-6 h-fit md:sticky md:top-6">
+          <FilterPanel />
         </div>
+
+
+
+        
 
 
         {/* Main Content Area */}
         <div className="flex-1 ">
           <section className="text-center px-4 py-8 md:px-6 md:py-12">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-wide text-gray-900 leading-tight">
-              SJD JEWELLERY WHOLESALE
+            <h1 className="text-4xl font-medium mb-2.5 text-gray-700 font-playfair">
+              SJD JEWELRY WHOLESALE
             </h1>
-            <p className="mt-4 md:mt-6 text-sm sm:text-base md:text-lg text-gray-600 max-w-sm sm:max-w-xl md:max-w-2xl mx-auto px-2">
+            <p className="mt-4 md:mt-6 text-[12px] text-[#666] max-w-sm sm:max-w-xl md:max-w-2xl mx-auto px-2">
               Discover our exquisite collection of fine jewelry. Choose your preferred way 
               to explore our premium selection.
             </p>
           </section>
-
+          <div className="px-4 md:px-8 pb-8">
+            <ShopByMaterial/>
+          </div>
+          <div className="px-4 md:px-8 pb-8">
+            <ShopByStyle/>
+          </div>
           <div className="px-4 md:px-8 pb-8">
             <CategoryGrid />
           </div>
