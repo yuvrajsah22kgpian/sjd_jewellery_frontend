@@ -445,3 +445,4 @@ export default function ProductsPage({
     </div>
   );
 }
+// update the code
