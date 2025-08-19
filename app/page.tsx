@@ -8,6 +8,7 @@ import ShopByMaterial from "../components/MaterialGrid";
 import ShopByStyle from "../components/Stylegrid";
 import CategoryGrid from "../components/CategoryGrid";
 import { AdjustmentsHorizontalIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { ProductCard } from "../components/Card";
 
 // Dynamically import FilterPanel to avoid SSR issues
 const FilterPanel = dynamic(() => import('../components/FilterPanel'), {
@@ -20,6 +21,19 @@ const FilterPanel = dynamic(() => import('../components/FilterPanel'), {
     </div>
   )
 });
+const EXAMPLE_PRODUCT = {
+  id: 'shirt-001',
+  name: 'Polo T-Shirt, Premium Cotton',
+  images: [
+    { src: '/shirt-1.jpg', alt: 'Front view' },
+    { src: '/shirt-2.jpg', alt: 'Back view' },
+    { src: '/shirt-3.jpg', alt: 'Collar detail' }
+  ],
+  originalPrice: 1299,
+  salePrice: 999,
+  discount: 23,
+  className:"h-80 w-80"
+};
 
 export default function LandingPage() {
   const [showFilters, setShowFilters] = useState(false);
@@ -73,7 +87,7 @@ export default function LandingPage() {
         
         {/* Desktop Filters */}
         
-        <div className="w-full max-w-xs mx-auto bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden mt-6 h-fit md:sticky md:top-6">
+        <div className="w-full max-w-xs mx-auto bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden mt-1 h-fit md:sticky md:top-6">
           <FilterPanel />
         </div>
 
@@ -102,10 +116,11 @@ export default function LandingPage() {
           <div className="px-4 md:px-8 pb-8">
             <CategoryGrid />
           </div>
+          {/* <div className="px-4 md:px-8 pb-8 ">
+          <ProductCard {...EXAMPLE_PRODUCT} />
+          </div> */}
         </div>
-
       </main>
-
       <Footer />
     </div>
   );
