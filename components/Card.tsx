@@ -477,7 +477,7 @@ export function ProductCard({
               <ShoppingCart className="h-2.5 w-2.5" />
             </IconButton>
             {/* Tooltip */}
-            <span className="pointer-events-none absolute bottom-full right-0 mb-1 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+            <span className="absolute bottom-full right-0 mb-1 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
               Add to Cart
             </span>
           </div>
