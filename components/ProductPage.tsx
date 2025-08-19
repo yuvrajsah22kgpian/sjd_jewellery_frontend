@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
 import { ProductCard } from "./Card";
-import { FilterSidebar } from "./FilterSidebar";
+import {FilterSidebar}  from "./FilterSidebar";
 import Header from "./Header";
 import Footer from "./Footer";
 
@@ -20,12 +20,41 @@ interface Product {
   discount: number;
 }
 
+// Define proper filter types
+interface Filters {
+  category?: string[];
+  material?: string[];
+  gemstone?: string[];
+  occasion?: string[];
+  discount?: number[];
+  priceMin?: number;
+  priceMax?: number;
+  customPriceMin?: number;
+  customPriceMax?: number;
+  inStock?: boolean;
+  newArrivals?: boolean;
+  certified?: boolean;
+  customizable?: boolean;
+}
+
 interface Props {
   heroLine1: string;
   heroLine2?: string;
   defaultExpandedFilter: string;
   pageSize?: number; // default is 12
-  defaultFilters?: Record<string, any>;
+  defaultFilters?: Filters; // Changed from Record<string, any>
+}
+
+// API response type
+interface ApiResponse {
+  data: Product[];
+  total: number;
+}
+
+// API parameters type
+interface ApiParams {
+  page: number;
+  filters: Filters;
 }
 
 const PAGE_BUTTONS_AROUND = 2; // How many page numbers to show around current
@@ -194,8 +223,8 @@ const DEMO_PRODUCTS: Product[] = [
   }
 ];
 
-// Mock API function
-const mockFetchProductsApi = async (params: { page: number; filters: any }): Promise<{ data: Product[]; total: number; }> => {
+// Mock API function with proper typing
+const mockFetchProductsApi = async (params: ApiParams): Promise<ApiResponse> => {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 500));
   
@@ -225,7 +254,7 @@ export default function ProductsPage({
   const [products, setProducts] = useState<Product[]>([]);
   const [totalProducts, setTotalProducts] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState(defaultFilters);
+  const [filters, setFilters] = useState<Filters>(defaultFilters);
 
   // Fetch products when page or filters change
   useEffect(() => {
@@ -241,13 +270,17 @@ export default function ProductsPage({
   const totalPages = Math.ceil(totalProducts / pageSize);
 
   // PAGINATION BUTTON GENERATION (show max 5 buttons for example)
-  const getPageButtons = () => {
-    const pages = [];
+  const getPageButtons = (): number[] => {
+    const pages: number[] = [];
     const left = Math.max(1, currentPage - PAGE_BUTTONS_AROUND);
     const right = Math.min(totalPages, currentPage + PAGE_BUTTONS_AROUND);
     for (let i = left; i <= right; i++) pages.push(i);
     return pages;
   };
+
+  // Check if we're on client side for responsive sidebar
+  const isClient = typeof window !== "undefined";
+  const showSidebarOnDesktop = !isClient || window.innerWidth >= 768;
 
   // Responsive grid: sm: 1, md: 2, lg: 4 cols
   return (
@@ -280,7 +313,7 @@ export default function ProductsPage({
           </div>
 
           {/* Sidebar: always rendered on desktop, toggled on mobile */}
-          {(showFilters || typeof window === "undefined" || window.innerWidth >= 768) && (
+          {(showFilters || showSidebarOnDesktop) && (
             <aside className="hidden md:block w-64 shrink-0">
               <FilterSidebar
                 filters={filters}
@@ -300,7 +333,18 @@ export default function ProductsPage({
                   onClose={() => setShowFilters(false)}
                 />
               </div>
-              <div className="flex-1" onClick={() => setShowFilters(false)} />
+              <div 
+                className="flex-1" 
+                onClick={() => setShowFilters(false)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    setShowFilters(false);
+                  }
+                }}
+                aria-label="Close filters"
+              />
             </aside>
           )}
 
