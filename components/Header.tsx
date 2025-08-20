@@ -115,14 +115,14 @@ export default function Header() {
                 <span>Wishlist</span>
               </a>
               <a 
-                href="/cart" 
+                href="/Cart" 
                 className="hover:text-blue-600 flex items-center gap-1 transition-colors duration-200 relative"
               >
                 <ShoppingCart size={16} />
                 <span>Cart</span>
                 {/* Cart badge - you can make this dynamic */}
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  0
+                  1
                 </span>
               </a>
               <a 
